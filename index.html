@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misterio — Fase 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b10; --panel:#14141d; --panel2:#1c1c28;
+    --ink:#e8e6df; --muted:#9a97a8;
+    --amber:#ffb703; --amber2:#ff9e00;
+    --blood:#c1121f; --blood2:#e5383b;
+    --green:#06d6a0; --line:#2a2a3a;
+    --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:'Outfit',system-ui,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(255,183,3,.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(193,18,31,.10), transparent 60%),
+      var(--bg);
+    min-height:100vh; padding:28px 16px 60px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--amber);border:1px solid var(--line);background:var(--panel);
+    padding:6px 12px;border-radius:999px;margin-bottom:18px;
+  }
+  .caja{
+    background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);
+    border-radius:18px;padding:30px 30px 26px;
+    box-shadow:0 20px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.03);
+    position:relative;overflow:hidden;
+  }
+  .caja::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.012) 3px 4px);
+  }
+  h1,h2,h3{font-family:'Special Elite',var(--mono);letter-spacing:.5px}
+  h3{margin:0 0 6px;font-size:1.5rem;color:#fff}
+  h3 .fase{color:var(--amber)}
+  .sub{color:var(--muted);font-size:.9rem;margin:0 0 18px;font-family:var(--mono)}
+  hr{border:none;border-top:1px dashed var(--line);margin:18px 0}
+  p{line-height:1.7}
+  code,.kbd{font-family:var(--mono);background:#0e0e16;border:1px solid var(--line);
+    padding:2px 7px;border-radius:6px;color:var(--green);font-size:.9em}
+  ul{line-height:1.8}
+  .nota{
+    background:#0e0e16;border-left:4px solid var(--blood);
+    padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0;color:#d7d4cc;font-style:italic;
+  }
+  .nota b{color:var(--amber);font-style:normal}
+  .tarea{
+    background:rgba(255,183,3,.06);border:1px solid rgba(255,183,3,.25);
+    border-radius:12px;padding:16px 18px;margin:18px 0;
+  }
+  .tarea .t{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+
+  /* ---- Live Lab ---- */
+  .lab{margin:22px 0 6px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0a0a12}
+  .lab .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#111120;border-bottom:1px solid var(--line)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+  .lab .bar span{margin-left:8px;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+  textarea#code{
+    width:100%;min-height:150px;resize:vertical;border:none;outline:none;
+    background:#0a0a12;color:#e8e6df;font-family:var(--mono);font-size:.92rem;
+    padding:14px;line-height:1.55;tab-size:4;
+  }
+  .lab .run{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--line);background:#0e0e18;flex-wrap:wrap}
+  .console{font-family:var(--mono);font-size:.88rem;white-space:pre-wrap;color:#a8ff9f;
+    background:#07070d;border-top:1px solid var(--line);padding:14px;min-height:44px;max-height:240px;overflow:auto}
+  .console:empty::before{content:"› la salida aparecerá aquí…";color:#4b4b5a}
+
+  /* ---- inputs / botones ---- */
+  .group{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+  label{font-weight:600;color:#efe;font-size:.95rem}
+  input[type=text]{
+    padding:13px 14px;border-radius:10px;border:1px solid var(--line);
+    background:#0e0e16;color:var(--ink);font-family:var(--mono);font-size:1rem;transition:.2s
+  }
+  input[type=text]:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,183,3,.15)}
+  button{
+    padding:12px 20px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:.98rem;
+    font-family:'Outfit';transition:transform .05s, filter .2s;
+  }
+  button:active{transform:translateY(1px)}
+  .btn-run{background:var(--green);color:#04231b}
+  .btn-run:hover{filter:brightness(1.08)}
+  .btn-clear{background:#22222f;color:var(--muted);border:1px solid var(--line)}
+  .btn-check{background:linear-gradient(180deg,var(--amber),var(--amber2));color:#241a00}
+  .btn-check:hover{filter:brightness(1.06)}
+
+  .feedback{margin-top:16px;font-size:1.02rem;display:none;padding:16px 18px;border-radius:12px;line-height:1.6}
+  .ok{display:block;background:rgba(6,214,160,.10);border:1px solid rgba(6,214,160,.4);color:#7ffcd8}
+  .bad{display:block;background:rgba(193,18,31,.10);border:1px solid rgba(229,56,59,.4);color:#ff9aa0}
+  .code-out{
+    display:inline-block;font-family:var(--mono);font-weight:700;letter-spacing:.22em;
+    background:#04231b;border:1px solid var(--green);color:var(--green);
+    padding:8px 16px;border-radius:10px;font-size:1.25rem;margin-top:8px
+  }
+  .crea-hint{margin-top:12px;padding:12px 14px;border-radius:10px;background:#0e0e16;
+    border:1px dashed var(--line);color:var(--muted);font-size:.88rem}
+  .crea-hint b{color:var(--amber)}
+  .foot{margin-top:22px;color:#55556a;font-size:.8rem;font-family:var(--mono);text-align:center}
+  .newtab{display:inline-flex;align-items:center;gap:6px;color:var(--amber);
+    font-family:var(--mono);font-size:.8rem;border:1px solid var(--line);
+    background:var(--panel);padding:5px 10px;border-radius:999px}
+  .loading{color:var(--muted);font-family:var(--mono);font-size:.82rem;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="badge">🔎 Evidencia · Huellas del sospechoso</div>
+  <div class="caja">
+    <h3><span class="fase">Fase 4</span> — Huellas del sospechoso</h3>
+    <p class="sub">Análisis de distancias · Escena del crimen</p>
+    <span class="newtab">🗔 Esta página se abrió en una pestaña nueva</span>
+    <p style="margin-top:16px">Los escáneres detectaron <b>tres juegos de huellas</b> a distintas
+    distancias del cuerpo, guardadas en <code>distancia_1</code>, <code>distancia_2</code> y
+    <code>distancia_3</code>.</p>
+    <ul>
+      <li>La huella <b>más cercana</b> pertenece al perito que acordonó la zona.</li>
+      <li>La huella <b>más lejana</b> es un error de lectura del sensor.</li>
+      <li>La huella del <b>verdadero sospechoso</b> es la que queda al descartar esos dos extremos.</li>
+    </ul>
+    <div class="nota">💡 <b>Notas del detective:</b> «Tengo tres distancias. ¿Cuál será la del medio?
+    Las funciones <code>min()</code> y <code>max()</code> me pueden ayudar… pero, ¿cómo llego al valor
+    intermedio combinándolas con la suma total?»</div>
+    <div class="tarea">
+      <div class="t">Tu tarea</div>
+      Calculá la distancia <b>intermedia</b> (ni la mínima ni la máxima), mostrala con
+      <code>print()</code> e ingresá ese valor abajo.
+    </div>
+    <p style="color:#9a97a8;font-size:.86rem;font-family:var(--mono)">Las variables <code>distancia_1</code>, <code>distancia_2</code> y <code>distancia_3</code> ya están cargadas en el sistema. Usalas directamente.</p>
+
+  <div class="lab">
+    <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      <span>laboratorio.py — Python 3.12 (Pyodide)</span>
+      <span class="loading" id="pyStatus">cargando Python…</span>
+    </div>
+    <textarea id="code" spellcheck="false"># Encontrá la distancia intermedia (ni la mínima ni la máxima)
+# entre distancia_1, distancia_2 y distancia_3, y mostrala con print().
+
+</textarea>
+    <div class="run">
+      <button class="btn-run" id="runBtn" onclick="ejecutar()" disabled>▶ Ejecutar</button>
+      <button class="btn-clear" onclick="limpiarConsola()">Limpiar consola</button>
+    </div>
+    <div class="console" id="out"></div>
+  </div>
+
+    <div class="group">
+      <label for="respuesta">Distancia del sospechoso:</label>
+      <input type="text" id="respuesta" placeholder="Ej. 45.2" autocomplete="off">
+      <div><button class="btn-check" onclick="verificar()">Validar evidencia</button></div>
+    </div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script>
+  let pyodide=null;
+  const $ = id => document.getElementById(id);
+  // Variables del expediente (cargadas en secreto, no visibles para el estudiante)
+  const PRELOAD = `distancia_1 = 12.5
+distancia_2 = 98.7
+distancia_3 = 45.2
+`;
+
+  // Tab -> 4 espacios
+  const ta = $("code");
+  if(ta){
+    ta.addEventListener("keydown",e=>{
+      if(e.key==="Tab"){e.preventDefault();
+        const s=ta.selectionStart,en=ta.selectionEnd;
+        ta.value=ta.value.slice(0,s)+"    "+ta.value.slice(en);
+        ta.selectionStart=ta.selectionEnd=s+4;}
+    });
+  }
+
+  async function initPy(){
+    try{
+      pyodide=await loadPyodide();
+      $("pyStatus").textContent="Python listo ✓";
+      $("runBtn").disabled=false;
+    }catch(err){ $("pyStatus").textContent="Error al cargar Python"; }
+  }
+  if(ta) initPy();
+
+  function limpiarConsola(){ $("out").textContent=""; }
+
+  async function ejecutar(){
+    if(!pyodide) return;
+    const out=$("out"); out.textContent="";
+    pyodide.setStdout({batched:t=>out.textContent+=t+"\n"});
+    pyodide.setStderr({batched:t=>out.textContent+=t+"\n"});
+    try{
+      // Se cargan primero las variables ocultas del expediente…
+      if(PRELOAD) await pyodide.runPythonAsync(PRELOAD);
+      // …y luego el código del estudiante, que ya puede usarlas.
+      await pyodide.runPythonAsync($("code").value);
+    }
+    catch(err){ out.textContent += String(err); }
+  }
+
+  function verificar(){
+    const r=$("respuesta").value.trim();
+    const fb=$("feedback");
+    
+    const norm = r.replace(",",".");
+    const validos = ["45.2","45.20","45.199999999999996","45.2000"];
+    if(validos.includes(norm)){
+      const codigo = String.fromCharCode(70,55,88,51,66);
+      fb.className="feedback ok";
+      fb.innerHTML="✅ <b>Correcto.</b> Huella intermedia identificada por análisis de datos.<br>"+
+        "Código secreto:<br><span class='code-out'>"+codigo+"</span>"+`
+    <div class="crea-hint">
+      🎯 <b>Copiá este código</b> y, de vuelta en <b>CREA</b>, seleccionalo entre las opciones
+      de la actividad para desbloquear la siguiente fase.
+    </div>`;
+    }else{
+      fb.className="feedback bad";
+      fb.innerHTML="❌ <b>Incorrecto.</b> Pista: si a la <b>suma</b> de las tres distancias le restás "+
+        "la <code>min()</code> y la <code>max()</code>, ¿qué valor queda?";
+    }
+
+  }
+</script>
+
+  <p class="foot">🕵️ El Misterio del Asesinato — Ciencias de la Computación · ANEP / Ceibal</p>
+</div>
+</body>
+</html>
